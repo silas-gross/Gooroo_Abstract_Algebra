@@ -11,7 +11,7 @@ p3=[460, 430]
 p1=[250,70]
 tracker="g=1"
 w=tk.Canvas(top,  cursor="dot", height=500, width="500")
-
+pf1, pf2, pf3, traf=p1, p2, p3, tracker
 def triangle(px1, px2, px3):
 #    w=tk.Canvas(top,  cursor="dot", height=500, width="500")
     tri=w.create_polygon(50, 425, 450, 425, 250, 83, fill='', outline="Black")
@@ -30,16 +30,21 @@ def text(px1, px2):
     if px1==[460, 430] and px2==[40,430]:
         w.create_text( 250,470, text="g=r*r*s")
     if px1==[40, 430] and px2==[460,430]:
-        w.create_text(250, 470, text="g=r*r")
+        w.create_text(250, 470, text="g=r")
     if px1==[460, 430] and px2==[250,70]:
-        w.create_text(250,470, text="g=r")
+        w.create_text(250,470, text="g=r*r")
     if px1==[40, 430] and px2==[250,70]:
         w.create_text(250,470, text="g=r*s")
     w.create_text(250, 485, text=tracker)
 def rf():
     global p1, p2, p3, tracker
     w.delete('all')
-    p1, p2, p3= p1, p3, p2
+    if p1==[250, 70]:
+        p1, p2, p3= p1, p3, p2
+    if p2==[250, 70]:
+        p1, p2, p3=p3, p2, p1
+    if p3==[250, 70]:
+        p1, p2, p3=p2, p1, p3
     triangle(p1, p2, p3)
     #text(p1, p2)
     tracker=tracker+"*s"
@@ -51,11 +56,19 @@ def ro():
     triangle(p1, p2, p3)
     tracker=tracker+"*r"
     text(p1, p2)
+def rs():
+    global p1, p2, p3, tracker, pf1, pf2, pf3, traf
+    w.delete('all')
+    p1, p2, p3, tracker=pf1, pf2, pf3, traf
+    triangle(p1, p2, p3)
+    text(p1, p2)
 def buttons():
     l=tk.Button(top, text="Rotate", command=ro)
     k=tk.Button(top, text="Reflect", command=rf)
+    m=tk.Button(top, text="Reset", command=rs)
     triangle(p1, p2, p3)
     k.pack()
     l.pack()
+    m.pack()
 buttons()
 top.mainloop()
