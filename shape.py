@@ -1,7 +1,7 @@
 #import matplot.lib as ml
-#import numpy as np
+import numpy as np
 import Tkinter as tk
-
+import math 
 
 
 
@@ -12,6 +12,39 @@ p1=[250,70]
 tracker="g=1"
 w=tk.Canvas(top,  cursor="dot", height=500, width="500")
 pf1, pf2, pf3, traf=p1, p2, p3, tracker
+def makepoints(angle, side, nsides): # this actually splits the plane to create the points
+    #This method just uses the sidelenghts as a method of getting the points, uses the angle for verification after the fact
+    #Choose the first point as the center of the top and then go from there
+    startingpoint=[250, 100] #kind of arbitrary, based on what looks nice from the triangle
+    ns=int(nsides/2)
+    stepsize=np.zeros(2)
+    stepsizetrue=500/ns
+    pt_to_thrird=2*side*side*(1-math.cos(angle))
+    stepsize[0]=int(math.sqrt(side*side- stepsizetrue*stepsizetrue))
+    stepsize[1]=int(stepsizetrue)
+    x, y= np.zeros[nsides], np.zeros[nsides]
+    for i in range(nsides):
+        #need to choose a maximum range of y, then fix the step length for y and correct x 
+        #going to choose y:100->600
+        #so then just do a bit of math here
+        #take the step size, square root of s^2-step^2= delta x
+        #but where does delta x go to, this may be where we utilize the angle
+        if i==0: 
+            x[i]=startingpoint[0]
+            y[i]=startingpoint[1]
+        else: #oof realized that one can't do it with a simple step approach
+            
+                
+
+def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
+    angle=(180*(npoints-2))/npoints #measure of each angle
+    slength=1200/npoints #side length with a fixed perimeter. maybe try (n-1)^2 scaling?? or just (n-2) scaling??, lets see how fixed lenght works. may make more sense to do n/n^2 type scaling
+    xpoints=np.zeros(npoints)
+    ypoints=np.zeros(npoints)
+    # create the array of points, that will then be brought together into a single array 
+    #this may actually work better in mathematica, but I have no idea how to properly work with this sort of GUI in mathematica--want to use a functional paradigm, can that be done here?
+
+
 def triangle(px1, px2, px3):
 #    w=tk.Canvas(top,  cursor="dot", height=500, width="500")
     tri=w.create_polygon(50, 425, 450, 425, 250, 83, fill='', outline="Black")

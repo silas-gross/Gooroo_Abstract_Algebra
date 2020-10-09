@@ -1,1 +1,5 @@
 This repo is for the visulaizations and programing that will go along with the gooroo course on abstract algebra
+
+It can create a very simple triangle that will do the rotations now, trying to generalize to any n-gon. 
+
+Need to add in an extra correction to fix the point locations
