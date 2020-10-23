@@ -1,6 +1,6 @@
 #import matplot.lib as ml
 import numpy as np
-import Tkinter as tk
+import tkinter as tk
 import math 
 
 
@@ -19,7 +19,7 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     ns=int(nsides/2)
     stepsize=np.zeros(2)
     stepsizetrue=500/ns
-    pt_to_thrird=2*side*side*(1-math.cos(angle))
+    center_angle=2*np.Pi/nsides
     stepsize[0]=int(math.sqrt(side*side- stepsizetrue*stepsizetrue))
     stepsize[1]=int(stepsizetrue)
     x, y= np.zeros[nsides], np.zeros[nsides]
@@ -27,14 +27,26 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
         #need to choose a maximum range of y, then fix the step length for y and correct x 
         #going to choose y:100->600
         #so then just do a bit of math here
-        #take the step size, square root of s^2-step^2= delta x
-        #but where does delta x go to, this may be where we utilize the angle
+        #we take the centeral angle to just be 2*pi/n
+        #Then the angle between any two points must be that 
+        #so if we take the first point, and write the traingle as a side with length s
+        #then it is a isocoles triangle.
+        #we take that the total change in y must be in that range
+        #we have fixed delta x and fixed delta y in the assumption that we alway change the coordinates such that we have the central line in the y direction
+        #This takes the transform of y->y cos a +x sin a
+        #Then 
         if i==0: 
             x[i]=startingpoint[0]
             y[i]=startingpoint[1]
-        else: #oof realized that one can't do it with a simple step approach
-            
-                
+        if i==1:
+            x[i]=startingpoint[0]+stepsize[0]
+            y[i]=startingpoint[1]+stepzize[1]
+        else:
+            y[i]=y[i-1]+int(s*(np.sin(angle/2)*np.pow(np.sin(center_angle), i)+ np.cos(angle/2)*np.pow(np.cos(center_angle),i))) 
+            x[i]=x[i-1]+int(s*(np.cos(angle/2)*np.pow(np.sin(center_angle), i)+ np.sin(angle/2)*np.pow(np.cos(center_angle),i)))
+
+                #I think this should work but I actually am not certian of my calculations here.
+    return x, y
 
 def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
     angle=(180*(npoints-2))/npoints #measure of each angle
@@ -43,7 +55,12 @@ def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
     ypoints=np.zeros(npoints)
     # create the array of points, that will then be brought together into a single array 
     #this may actually work better in mathematica, but I have no idea how to properly work with this sort of GUI in mathematica--want to use a functional paradigm, can that be done here?
-
+    xpoints, ypoints=makepoints(angle, slength, npoints)
+    points=np.zeros(2*npoints)
+    for i in range(npoints):
+        points[2*i]=xpoints[i]
+        points[2*i+1]=ypoints[i]
+    return points
 
 def triangle(px1, px2, px3):
 #    w=tk.Canvas(top,  cursor="dot", height=500, width="500")
