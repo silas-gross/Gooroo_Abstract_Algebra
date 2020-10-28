@@ -20,6 +20,9 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     stepsize=np.zeros(2)
     stepsizetrue=500/ns
     center_angle=2*np.Pi/nsides
+    radius=side*np.sin(angle/2)/np.sin(center_angle)
+    ycenter=100+radius
+    center_point=[250, ycenter]
     stepsize[0]=int(math.sqrt(side*side- stepsizetrue*stepsizetrue))
     stepsize[1]=int(stepsizetrue)
     x, y= np.zeros[nsides], np.zeros[nsides]
@@ -37,13 +40,19 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
         #Then 
         if i==0: 
             x[i]=startingpoint[0]
-            y[i]=startingpoint[1]
-        if i==1:
-            x[i]=startingpoint[0]+stepsize[0]
-            y[i]=startingpoint[1]+stepzize[1]
-        else:
-            y[i]=y[i-1]+int(s*(np.sin(angle/2)*np.pow(np.sin(center_angle), i)+ np.cos(angle/2)*np.pow(np.cos(center_angle),i))) 
-            x[i]=x[i-1]+int(s*(np.cos(angle/2)*np.pow(np.sin(center_angle), i)+ np.sin(angle/2)*np.pow(np.cos(center_angle),i)))
+            y[i]=startinngpoint[1]
+        #Yeah, this is way easier to do in polar
+        #base around the center point and remember that teh center angle is counting from the y axis as a result of how we have chosen the setup
+        else: 
+            x[i]= startingpoint[0]+int(radius*np.sin(i*center_angle))
+            y[i]= ycenter+int(radius*np.cos(i*center_angle))
+
+       #if i==1:
+        #    x[i]=startingpoint[0]+stepsize[0]
+         #   y[i]=startingpoint[1]+stepzize[1]
+       # else:
+        #    y[i]=y[i-1]+int(s*(np.sin(angle/2)*np.pow(np.sin(center_angle), i)+ np.cos(angle/2)*np.pow(np.cos(center_angle),i))) 
+         #   x[i]=x[i-1]+int(s*(np.cos(angle/2)*np.pow(np.sin(center_angle), i)+ np.sin(angle/2)*np.pow(np.cos(center_angle),i)))
 
                 #I think this should work but I actually am not certian of my calculations here.
     return x, y
@@ -61,7 +70,8 @@ def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
         points[2*i]=xpoints[i]
         points[2*i+1]=ypoints[i]
     return points
-
+def polygon(points)
+    
 def triangle(px1, px2, px3):
 #    w=tk.Canvas(top,  cursor="dot", height=500, width="500")
     tri=w.create_polygon(50, 425, 450, 425, 250, 83, fill='', outline="Black")
