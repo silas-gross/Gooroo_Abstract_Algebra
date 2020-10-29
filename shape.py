@@ -19,13 +19,15 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     ns=int(nsides/2)
     stepsize=np.zeros(2)
     stepsizetrue=500/ns
-    center_angle=2*np.Pi/nsides
+    center_angle=2*np.pi/nsides
+    print("center angle is " +str(center_angle ))
     radius=side*np.sin(angle/2)/np.sin(center_angle)
     ycenter=100+radius
+    print("center point is : 250, " + str(ycenter))
     center_point=[250, ycenter]
-    stepsize[0]=int(math.sqrt(side*side- stepsizetrue*stepsizetrue))
+    stepsize[0]=int(math.sqrt(abs(side*side- stepsizetrue*stepsizetrue)))
     stepsize[1]=int(stepsizetrue)
-    x, y= np.zeros[nsides], np.zeros[nsides]
+    x, y= np.zeros(nsides), np.zeros(nsides)
     for i in range(nsides):
         #need to choose a maximum range of y, then fix the step length for y and correct x 
         #going to choose y:100->600
@@ -39,14 +41,17 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
         #This takes the transform of y->y cos a +x sin a
         #Then 
         if i==0: 
-            x[i]=startingpoint[0]
-            y[i]=startinngpoint[1]
+            x[i]=250
+            y[i]=100
         #Yeah, this is way easier to do in polar
         #base around the center point and remember that teh center angle is counting from the y axis as a result of how we have chosen the setup
         else: 
-            x[i]= startingpoint[0]+int(radius*np.sin(i*center_angle))
-            y[i]= ycenter+int(radius*np.cos(i*center_angle))
+            x[i]= int(startingpoint[0]+int(radius*np.sin(i*center_angle)))
+            y[i]= int(ycenter+int(radius*np.cos(i*center_angle)))
+       
+            print("Help x is "+str(x[i]))
 
+            print("help y is "+str(y[i]))
        #if i==1:
         #    x[i]=startingpoint[0]+stepsize[0]
          #   y[i]=startingpoint[1]+stepzize[1]
@@ -58,7 +63,7 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     return x, y
 
 def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
-    angle=(180*(npoints-2))/npoints #measure of each angle
+    angle=(np.pi*(npoints-2))/npoints #measure of each angle
     slength=1200/npoints #side length with a fixed perimeter. maybe try (n-1)^2 scaling?? or just (n-2) scaling??, lets see how fixed lenght works. may make more sense to do n/n^2 type scaling
     xpoints=np.zeros(npoints)
     ypoints=np.zeros(npoints)
@@ -70,8 +75,9 @@ def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
         points[2*i]=xpoints[i]
         points[2*i+1]=ypoints[i]
     return points
-def polygon(points)
-    
+def polygon(points):
+    ngon=w.create_polygon(points, fill='', outline="Black")
+    w.pack()
 def triangle(px1, px2, px3):
 #    w=tk.Canvas(top,  cursor="dot", height=500, width="500")
     tri=w.create_polygon(50, 425, 450, 425, 250, 83, fill='', outline="Black")
@@ -126,9 +132,13 @@ def buttons():
     l=tk.Button(top, text="Rotate", command=ro)
     k=tk.Button(top, text="Reflect", command=rf)
     m=tk.Button(top, text="Reset", command=rs)
-    triangle(p1, p2, p3)
+    ps=nsidedpolygon(5)
+    print(ps)
+    w.create_polygon([250, 100, 370,139, 444, 367,   56, 367, 130, 139])
+    #polygon(ps)
     k.pack()
     l.pack()
     m.pack()
+    w.pack()
 buttons()
 top.mainloop()
