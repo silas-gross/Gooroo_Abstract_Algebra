@@ -21,7 +21,7 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     stepsizetrue=500/ns
     center_angle=2*np.pi/nsides
     print("center angle is " +str(center_angle ))
-    radius=side*np.sin(angle/2)/np.sin(center_angle)
+    radius=side/(2*np.sqrt(1-np.cos(center_angle)))
     ycenter=100+radius
     print("center point is : 250, " + str(ycenter))
     center_point=[250, ycenter]
@@ -47,17 +47,17 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
         #base around the center point and remember that teh center angle is counting from the y axis as a result of how we have chosen the setup
         else: 
             x[i]= int(startingpoint[0]+int(radius*np.sin(i*center_angle)))
-            y[i]= int(ycenter+int(radius*np.cos(i*center_angle)))
+            y[i]= int(ycenter-int(radius*np.cos(i*center_angle)))
        
-            print("Help x is "+str(x[i]))
+          #  print("Help x is "+str(x[i]))
 
-            print("help y is "+str(y[i]))
-       #if i==1:
-        #    x[i]=startingpoint[0]+stepsize[0]
-         #   y[i]=startingpoint[1]+stepzize[1]
-       # else:
-        #    y[i]=y[i-1]+int(s*(np.sin(angle/2)*np.pow(np.sin(center_angle), i)+ np.cos(angle/2)*np.pow(np.cos(center_angle),i))) 
-         #   x[i]=x[i-1]+int(s*(np.cos(angle/2)*np.pow(np.sin(center_angle), i)+ np.sin(angle/2)*np.pow(np.cos(center_angle),i)))
+           # print("help y is "+str(y[i]))
+        #if i==1:
+         #  x[i]=startingpoint[0]+stepsize[0]
+          # y[i]=startingpoint[1]+stepsize[1]
+        #else:
+         #   y[i]=y[i-1]+int(side*(np.sin(angle/2)*pow(np.sin(center_angle), i)+ np.cos(angle/2)*pow(np.cos(center_angle),i))) 
+          #  x[i]=x[i-1]+int(side*(np.cos(angle/2)*pow(np.sin(center_angle), i)+ np.sin(angle/2)*pow(np.cos(center_angle),i)))
 
                 #I think this should work but I actually am not certian of my calculations here.
     return x, y
@@ -134,7 +134,7 @@ def buttons():
     m=tk.Button(top, text="Reset", command=rs)
     ps=nsidedpolygon(5)
     print(ps)
-    w.create_polygon([250, 100, 370,139, 444, 367,   56, 367, 130, 139])
+    w.create_polygon([250, 100, 387,200, 334, 360, 166, 360, 113, 200])
     #polygon(ps)
     k.pack()
     l.pack()
