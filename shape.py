@@ -17,7 +17,7 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     #Choose the first point as the center of the top and then go from there
     startingpoint=[250, 100] #kind of arbitrary, based on what looks nice from the triangle
     ns=int(nsides/2)
-    stepsize=np.zeros(2)
+    stepsize=[0,0]
     stepsizetrue=500/ns
     center_angle=2*np.pi/nsides
     print("center angle is " +str(center_angle ))
@@ -27,7 +27,7 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
     center_point=[250, ycenter]
     stepsize[0]=int(math.sqrt(abs(side*side- stepsizetrue*stepsizetrue)))
     stepsize[1]=int(stepsizetrue)
-    x, y= np.zeros(nsides), np.zeros(nsides)
+    x, y= np.ones(nsides), np.ones(nsides)
     for i in range(nsides):
         #need to choose a maximum range of y, then fix the step length for y and correct x 
         #going to choose y:100->600
@@ -46,7 +46,7 @@ def makepoints(angle, side, nsides): # this actually splits the plane to create 
         #Yeah, this is way easier to do in polar
         #base around the center point and remember that teh center angle is counting from the y axis as a result of how we have chosen the setup
         else: 
-            x[i]= int(startingpoint[0]+int(radius*np.sin(i*center_angle)))
+            x[i]=int(startingpoint[0]+int(radius*np.sin(i*center_angle)))
             y[i]= int(ycenter-int(radius*np.cos(i*center_angle)))
        
           #  print("Help x is "+str(x[i]))
@@ -134,7 +134,7 @@ def buttons():
     m=tk.Button(top, text="Reset", command=rs)
     ps=nsidedpolygon(5)
     print(ps)
-    w.create_polygon([250, 100, 387,200, 334, 360, 166, 360, 113, 200])
+    w.create_polygon(ps)
     #polygon(ps)
     k.pack()
     l.pack()
