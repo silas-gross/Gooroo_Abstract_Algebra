@@ -1,144 +1,280 @@
-#import matplot.lib as ml
-import numpy as np
 import tkinter as tk
-import math 
+import tkinter.font as tkFont
+import math
+import time
+
+root = tk.Tk()
+id = lambda p: p
+
+currentRotation = tk.IntVar(root, value=0)
+currentReflection = tk.IntVar(root, value=1)
+currentTransLabel = tk.StringVar(root, value="g = I")
+
+fontSize = tkFont.Font(family="Arial", size=12)
+colors = ['IndianRed1', 'SpringGreen2', 'cornflower blue', 'peach puff', 'LightGoldenrod1', 'SkyBlue3', 'MediumPurple1', 'LightCyan2', 'Orange', 'turquoise']
+
+def createText(target, x, y, n):
+	text = target.create_text(x, y, text = str(n+1), tag = "l." + str(n), font = ("Arial", 12))
+	rect = target.create_rectangle(target.bbox(text), fill = colors[n%len(colors)], tag = "l.r." + str(n))
+	target.tag_lower(rect, text)
 
 
+def relocateText(target, x, y, n):
+	if len(target.find_withtag("l." + str(n))) == 0:
+		return
 
-top=tk.Tk()
-p2=[40,430]
-p3=[460, 430]
-p1=[250,70]
-tracker="g=1"
-w=tk.Canvas(top,  cursor="dot", height=500, width="500")
-pf1, pf2, pf3, traf=p1, p2, p3, tracker
-def makepoints(angle, side, nsides): # this actually splits the plane to create the points
-    #This method just uses the sidelenghts as a method of getting the points, uses the angle for verification after the fact
-    #Choose the first point as the center of the top and then go from there
-    startingpoint=[250, 100] #kind of arbitrary, based on what looks nice from the triangle
-    ns=int(nsides/2)
-    stepsize=[0,0]
-    stepsizetrue=500/ns
-    center_angle=2*np.pi/nsides
-    print("center angle is " +str(center_angle ))
-    radius=side/(2*np.sqrt(1-np.cos(center_angle)))
-    ycenter=100+radius
-    print("center point is : 250, " + str(ycenter))
-    center_point=[250, ycenter]
-    stepsize[0]=int(math.sqrt(abs(side*side- stepsizetrue*stepsizetrue)))
-    stepsize[1]=int(stepsizetrue)
-    x, y= np.ones(nsides), np.ones(nsides)
-    for i in range(nsides):
-        #need to choose a maximum range of y, then fix the step length for y and correct x 
-        #going to choose y:100->600
-        #so then just do a bit of math here
-        #we take the centeral angle to just be 2*pi/n
-        #Then the angle between any two points must be that 
-        #so if we take the first point, and write the traingle as a side with length s
-        #then it is a isocoles triangle.
-        #we take that the total change in y must be in that range
-        #we have fixed delta x and fixed delta y in the assumption that we alway change the coordinates such that we have the central line in the y direction
-        #This takes the transform of y->y cos a +x sin a
-        #Then 
-        if i==0: 
-            x[i]=250
-            y[i]=100
-        #Yeah, this is way easier to do in polar
-        #base around the center point and remember that teh center angle is counting from the y axis as a result of how we have chosen the setup
-        else: 
-            x[i]=int(startingpoint[0]+int(radius*np.sin(i*center_angle)))
-            y[i]= int(ycenter-int(radius*np.cos(i*center_angle)))
-       
-          #  print("Help x is "+str(x[i]))
+	target.coords("l." + str(n), x, y)
+	bbox = target.bbox("l." + str(n))
+	bbox = (bbox[0]-4, bbox[1]-4, bbox[2]+4, bbox[3]+4)
+	target.coords("l.r." + str(n), bbox)
 
-           # print("help y is "+str(y[i]))
-        #if i==1:
-         #  x[i]=startingpoint[0]+stepsize[0]
-          # y[i]=startingpoint[1]+stepsize[1]
-        #else:
-         #   y[i]=y[i-1]+int(side*(np.sin(angle/2)*pow(np.sin(center_angle), i)+ np.cos(angle/2)*pow(np.cos(center_angle),i))) 
-          #  x[i]=x[i-1]+int(side*(np.cos(angle/2)*pow(np.sin(center_angle), i)+ np.sin(angle/2)*pow(np.cos(center_angle),i)))
 
-                #I think this should work but I actually am not certian of my calculations here.
-    return x, y
+# Translates in polar to rotate the figure
+def polarTrans(p):
+	return (p[0] + currentRotation.get(), p[1])
 
-def nsidedpolygon(npoints): #takes in a number of sides and draws a polygon
-    angle=(np.pi*(npoints-2))/npoints #measure of each angle
-    slength=1200/npoints #side length with a fixed perimeter. maybe try (n-1)^2 scaling?? or just (n-2) scaling??, lets see how fixed lenght works. may make more sense to do n/n^2 type scaling
-    xpoints=np.zeros(npoints)
-    ypoints=np.zeros(npoints)
-    # create the array of points, that will then be brought together into a single array 
-    #this may actually work better in mathematica, but I have no idea how to properly work with this sort of GUI in mathematica--want to use a functional paradigm, can that be done here?
-    xpoints, ypoints=makepoints(angle, slength, npoints)
-    points=np.zeros(2*npoints)
-    for i in range(npoints):
-        points[2*i]=xpoints[i]
-        points[2*i+1]=ypoints[i]
-    return points
-def polygon(points):
-    ngon=w.create_polygon(points, fill='', outline="Black")
-    w.pack()
-def triangle(px1, px2, px3):
-#    w=tk.Canvas(top,  cursor="dot", height=500, width="500")
-    tri=w.create_polygon(50, 425, 450, 425, 250, 83, fill='', outline="Black")
-    label1=w.create_text(px2, text="2")
-    label2=w.create_text(px3, text="3")
-    label3=w.create_text(px1, text="1")
-    dividing_line=w.create_line(250,83, 250,450, dash=(10,))
-    w.pack()
-def text(px1, px2):
-    global tracker
-    #tex=tk.Canvas(top, height=100, width=500)
-    if px1==[250, 70] and px2==[40,430]:
-        w.create_text(250, 470, text="g=1")
-    if px1==[250, 70] and px2==[460,430]:
-        w.create_text(250, 470, text="g=s")
-    if px1==[460, 430] and px2==[40,430]:
-        w.create_text( 250,470, text="g=r*r*s")
-    if px1==[40, 430] and px2==[460,430]:
-        w.create_text(250, 470, text="g=r")
-    if px1==[460, 430] and px2==[250,70]:
-        w.create_text(250,470, text="g=r*r")
-    if px1==[40, 430] and px2==[250,70]:
-        w.create_text(250,470, text="g=r*s")
-    w.create_text(250, 485, text=tracker)
-def rf():
-    global p1, p2, p3, tracker
-    w.delete('all')
-    if p1==[250, 70]:
-        p1, p2, p3= p1, p3, p2
-    if p2==[250, 70]:
-        p1, p2, p3=p3, p2, p1
-    if p3==[250, 70]:
-        p1, p2, p3=p2, p1, p3
-    triangle(p1, p2, p3)
-    #text(p1, p2)
-    tracker=tracker+"*s"
-    text(p1, p2)
-def ro():
-    global p1, p2, p3, tracker
-    w.delete('all')
-    p1, p2, p3= p2, p3, p1
-    triangle(p1, p2, p3)
-    tracker=tracker+"*r"
-    text(p1, p2)
-def rs():
-    global p1, p2, p3, tracker, pf1, pf2, pf3, traf
-    w.delete('all')
-    p1, p2, p3, tracker=pf1, pf2, pf3, traf
-    triangle(p1, p2, p3)
-    text(p1, p2)
-def buttons():
-    l=tk.Button(top, text="Rotate", command=ro)
-    k=tk.Button(top, text="Reflect", command=rf)
-    m=tk.Button(top, text="Reset", command=rs)
-    ps=nsidedpolygon(5)
-    print(ps)
-    w.create_polygon(ps)
-    #polygon(ps)
-    k.pack()
-    l.pack()
-    m.pack()
-    w.pack()
-buttons()
-top.mainloop()
+# Translates in cartesian to center and reflect
+def cartTrans(p):
+	return (currentReflection.get() * p[0] + 250, p[1] + 250)
+
+
+################################################################################
+##
+##               Button callback functions
+##
+###############################################################################
+
+# Removes a point
+# Changes the label, animates down by one point, and remove the extra label
+def subPoint():
+	global currentPoints, currentPointsLabel, canvas, polyId
+	if currentPoints.get() == 3:
+		return
+	reset()
+
+	currentPoints.set(currentPoints.get()-1)
+	currentPointsLabel.set(str(currentPoints.get()))
+
+	# Remove the extra label
+	canvas.delete("l." + currentPointsLabel.get())
+	canvas.delete("l.r." + currentPointsLabel.get())
+
+	plotToPolygon(canvas, polyId, currentPoints.get()+1, 200, -1, 10, .1, interp=quadInterp)
+
+
+# Adds a point
+# Changes the label, animates up by a point, and adds an extra point label
+def addPoint():
+	global currentPoints, currentPointsLabel, canvas, polyId
+	if currentPoints.get() == 20:
+		return
+	reset()
+
+	# Add a new label
+	createText(canvas, 0, 0, currentPoints.get())
+
+	currentPoints.set(currentPoints.get()+1)
+	currentPointsLabel.set(str(currentPoints.get()))
+
+	plotToPolygon(canvas, polyId, currentPoints.get(), 200, 1, 10, .1, interp=quadInterp)
+
+
+# Changes the trans identity and rotation variable
+def rotate():
+	global currentRotation, currentTransLabel
+	currentRotation.set(currentRotation.get() + 360/currentPoints.get())
+	currentTransLabel.set(currentTransLabel.get() + " * s")
+
+	plotPolygon(canvas, polyId, currentPoints.get(), 200)
+
+
+# Changes the trans identity and reflection variable
+def reflect():
+	global currentReflection, currentTransLabel
+	currentReflection.set(currentReflection.get() * -1)
+	currentTransLabel.set(currentTransLabel.get() + " * r")
+
+	plotPolygon(canvas, polyId, currentPoints.get(), 200)
+
+
+# Brings all trans, rotation, and reflection back to initial
+def reset():
+	global currentRotation, currentReflection, currentTransLabel
+	currentRotation.set(0)
+	currentReflection.set(1)
+	currentTransLabel.set("g = I")
+
+	plotPolygon(canvas, polyId, currentPoints.get(), 200)
+
+
+######################################################################
+##
+##             Build functions, one for each pane
+##
+######################################################################
+
+def buildNCounter():
+	global currentPoints, currentPointsLabel
+
+	nCounter = tk.Frame(root, pady=5)
+	nCounter.pack(side=tk.TOP)
+
+	# Initialize as a triangle
+	currentPoints = tk.IntVar(root, value = 3)
+	currentPointsLabel = tk.StringVar(root, "3")
+
+	tk.Button(root, text = "-", command = subPoint).pack(in_=nCounter, side=tk.LEFT)
+	tk.Label(root, textvariable=currentPointsLabel, padx=10, font=fontSize).pack(in_=nCounter, side=tk.LEFT)
+	tk.Button(root, text = "+", command = addPoint).pack(in_=nCounter, side=tk.LEFT)
+
+
+def buildRRR():
+	rrrControls = tk.Frame(root, pady=5)
+	rrrControls.pack(side=tk.TOP)
+
+	tk.Button(root, text = "Rotate", command = rotate).pack(in_=rrrControls, side=tk.LEFT, padx=5)
+	tk.Button(root, text = "Reflect", command = reflect).pack(in_=rrrControls, side=tk.LEFT, padx=5)
+	tk.Button(root, text = "Reset", command = reset).pack(in_=rrrControls, side=tk.LEFT, padx=5)
+
+
+def buildCanvas():
+	global canvas, polyId
+
+	drawPane = tk.Frame(root, pady=10)
+	drawPane.pack(side=tk.TOP)
+	canvas = tk.Canvas(root, height=500, width=500)
+
+	# Create a blank polygon to get an id and 3 initial labels
+	polyId = canvas.create_polygon(0, 0, outline='black', fill='')
+	createText(canvas, 0, 0, 0)
+	createText(canvas, 0, 0, 1)
+	createText(canvas, 0, 0, 2)
+
+	plotPolygon(canvas, polyId, currentPoints.get(), 200)
+
+	# Dotted line
+	xc, yc = polarToCart([(0, 0)])[0]
+	canvas.create_line(xc, yc-250, xc, yc+250, dash=(10,))
+
+	canvas.pack(in_=drawPane)
+
+
+def buildCurrentTrans():
+	bottom = tk.Frame(root, pady=5)
+	bottom.pack(side=tk.TOP)
+	tk.Label(root, textvariable=currentTransLabel, font=fontSize).pack(in_=bottom)
+
+
+def build():
+	buildNCounter()
+	buildCanvas()
+	buildCurrentTrans()
+	buildRRR()
+
+
+###########################################################################
+##
+##          Interpolators
+##
+###########################################################################
+
+def linearInterp(start, stop, progress):
+	return start + (stop-start) * progress
+
+def quadInterp(start, stop, x):
+	mult = 8 * x * x * x * x if x < 0.5 else 1 - math.pow(-2 * x + 2, 4) / 2;
+	return start + (stop-start)*mult
+
+
+# Computes the polar points of a regular n-gon based on its radius and number of sides
+# A simple point generator function essentially
+def computeNgonPolar(n, r):
+	alpha = 360.0 / n
+	points = []
+	angle = -90 if n%2 == 1 else alpha/2-90
+	for c in range(n):
+		points.append((angle%360, r))
+		angle += alpha
+	return points
+
+
+# Computes the too n-gon point sets
+# Generates a set of starting points and a set of ending points, then uniformly interpolates
+# Direction function impacts if they interpolate start to end (forward, 1) or end to start (backwards, -1)
+def computeToNgon(n, r, direction, steps, interp=linearInterp):
+	alpha0 = 360.0 / (n-1)
+	alpha1 = 360.0 / n
+
+	pointStarts = polarToCart(computeNgonPolar(n-1, r))
+	pointStarts.append(pointStarts[0])
+	pointEnds = polarToCart(computeNgonPolar(n, r))
+
+	points = []
+	for step in range(steps):
+		pointSet = []
+
+		progress = step / (steps-1)
+		for c in range(n):
+			x1, y1 = pointStarts[c]
+			x2, y2 = pointEnds[c]
+			if direction > 0:
+				pointSet.append((interp(x1, x2, progress), interp(y1, y2, progress)))
+			else:
+				pointSet.append((interp(x2, x1, progress), interp(y2, y1, progress)))
+
+		points.append(pointSet)
+
+	return points
+
+
+# Acts on a list converting each point from polar to cartesian
+def polarToCart(points):
+	cart = []
+	for p in points:
+		a, r = polarTrans(p)
+		rads = math.radians(a%360)
+		cp = cartTrans((r*math.cos(rads), r*math.sin(rads)))
+		cart.append(cp)
+	return cart
+
+
+# Plots a list of cartesian points
+# A utility method for flattening and handling canvas operations
+def plotCartesianPoints(target, polyId, points, xc, yc, gap=15):
+	flat = []
+	for x, y in points:
+		flat.append(x)
+		flat.append(y)
+	target.coords(polyId, *flat)
+
+	n = 0
+	for x, y in points:
+		x += gap if x > xc else -gap
+		y += gap if y > yc else -gap
+		relocateText(target, x, y, n)
+		n += 1
+
+
+# The most accessible polygon plotting function
+# Takes care of all required math to make a side length and radius turn into a canvas plot
+def plotPolygon(target, polyId, n, r, gap=15):
+	points = computeNgonPolar(n, r)
+	xc, yc = polarToCart([(0, 0)])[0]
+
+	cartPoints = polarToCart(points)
+
+	plotCartesianPoints(target, polyId, cartPoints, xc, yc, gap)
+
+
+# An animation that plots each frame of the interpolation between shapes
+def plotToPolygon(target, polyId, n, r, direction, steps, delay, interp=linearInterp, gap=15):
+	points = computeToNgon(n, r, direction, steps, interp)
+	xc, yc = polarToCart([(0, 0)])[0]
+	for pointSet in points:
+		plotCartesianPoints(target, polyId, pointSet, xc, yc, gap)
+		root.update()
+		time.sleep(delay)
+
+build()
+root.mainloop()
+
