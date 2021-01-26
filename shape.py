@@ -1,6 +1,6 @@
 #import matplot.lib as ml
 #import numpy as np
-import Tkinter as tk
+import tkinter as tk
 
 
 
